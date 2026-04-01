@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NeonLink – URL Shortener</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600&display=swap"></noscript>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <!-- Animated background grid -->
+  <div class="bg-grid"></div>
+  <div class="scanline"></div>
+
+  <!-- Floating particles -->
+  <div class="particles" id="particles"></div>
+
+  <header class="header">
+    <div class="logo">
+      <span class="logo-icon">⚡</span>
+      <span class="logo-text">NEON<span class="logo-accent">LINK</span></span>
+    </div>
+    <nav class="nav">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="admin.html" class="nav-link">Admin</a>
+    </nav>
+  </header>
+
+  <main class="main">
+    <section class="hero">
+      <div class="hero-badge">⚡ INSTANT LINK COMPRESSION</div>
+      <h1 class="hero-title">
+        Shorten.<br/>
+        <span class="gradient-text">Share. Track.</span>
+      </h1>
+      <p class="hero-sub">Transform your long URLs into sleek, shareable neon links — powered by GitHub, zero server cost.</p>
+
+      <div class="shortener-card glass-card">
+        <div class="input-row">
+          <div class="input-wrapper">
+            <span class="input-icon">🔗</span>
+            <input type="url" id="urlInput" class="url-input" placeholder="Paste your long URL here..."/>
+          </div>
+          <button class="btn-shorten" id="shortenBtn" onclick="shortenURL()">
+            <span class="btn-text">SHORTEN</span>
+            <span class="btn-glow"></span>
+          </button>
+        </div>
+
+        <div class="options-row">
+          <label class="option-label">Custom ID (optional):</label>
+          <input type="text" id="customId" class="mini-input" placeholder="e.g. mylink"/>
+        </div>
+
+        <!-- Result Box -->
+        <div class="result-box" id="resultBox" style="display:none;">
+          <div class="result-header">✅ Link Created!</div>
+          <div class="result-link-row">
+            <span class="result-link" id="resultLink"></span>
+            <button class="btn-copy" onclick="copyLink()" title="Copy">📋 Copy</button>
+          </div>
+          <div class="result-actions">
+            <button class="btn-sm" onclick="showQR()">🔲 QR Code</button>
+            <button class="btn-sm" onclick="testLink()">🧪 Test</button>
+          </div>
+          <div id="qrBox" style="display:none; margin-top:16px; text-align:center;"></div>
+        </div>
+
+        <!-- Error Box -->
+        <div class="error-box" id="errorBox" style="display:none;">
+          <span id="errorMsg"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats section -->
+    <section class="stats-section">
+      <div class="stat-card glass-card">
+        <div class="stat-num" id="totalLinks">0</div>
+        <div class="stat-label">Links Created</div>
+      </div>
+      <div class="stat-card glass-card">
+        <div class="stat-num" id="totalClicks">0</div>
+        <div class="stat-label">Total Clicks</div>
+      </div>
+      <div class="stat-card glass-card">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Free Forever</div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="how-section">
+      <h2 class="section-title">HOW IT <span class="gradient-text">WORKS</span></h2>
+      <div class="steps-grid">
+        <div class="step-card glass-card">
+          <div class="step-num">01</div>
+          <div class="step-icon">🔗</div>
+          <div class="step-title">Paste URL</div>
+          <div class="step-desc">Drop your long, ugly URL into the input box above.</div>
+        </div>
+        <div class="step-card glass-card">
+          <div class="step-num">02</div>
+          <div class="step-icon">⚡</div>
+          <div class="step-title">Generate</div>
+          <div class="step-desc">A unique short ID is generated and saved to GitHub JSON.</div>
+        </div>
+        <div class="step-card glass-card">
+          <div class="step-num">03</div>
+          <div class="step-icon">🚀</div>
+          <div class="step-title">Share</div>
+          <div class="step-desc">Copy your neon short link and share it anywhere.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>⚡ NeonLink — Powered by GitHub Pages & GitHub API · Zero server cost · <a href="admin.html" style="color:var(--neon)">Admin Panel</a></p>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Generate particles
+      var container = document.getElementById('particles');
+      for(var i=0;i<30;i++){
+        var p = document.createElement('div');
+        p.className = 'particle';
+        p.style.cssText = 'left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;animation-delay:'+Math.random()*8+'s;animation-duration:'+(4+Math.random()*8)+'s;width:'+(2+Math.random()*3)+'px;height:'+(2+Math.random()*3)+'px;';
+        container.appendChild(p);
+      }
+      if(typeof loadStats === 'function') loadStats();
+    });
+  </script>
+</body>
+</html>
