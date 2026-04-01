@@ -8,7 +8,7 @@
 const DB_CONFIG = {
   owner: "sk9910084",           // GitHub username
   repo:  "linkpro-db",          // Create this repo on GitHub
-  token: "",                     // Set via admin panel (never hardcode)
+  token: "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",                     // Set via admin panel (never hardcode)
   branch: "main",
   // Admin access URL pattern: ?admin=sk9910084
   adminKey: "sk9910084",
