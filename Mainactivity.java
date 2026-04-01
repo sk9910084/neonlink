@@ -32,7 +32,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
 
     // ─── CONFIG ────────────────────────────────────────────
-    private static final String SITE_URL = "https://YOUR_USERNAME.github.io/neonlink/";
+    private static final String SITE_URL = "https://sk9910084.github.io/neonlink/";
     // Change the above to your GitHub Pages URL
     // ───────────────────────────────────────────────────────
 
