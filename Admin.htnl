@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NeonLink – Admin Panel</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="scanline"></div>
+
+  <!-- Login Screen -->
+  <div id="loginScreen" class="redirect-center">
+    <div class="redirect-card glass-card" style="max-width:420px;width:100%;">
+      <div style="text-align:center;margin-bottom:24px;">
+        <div style="font-size:3rem;">🔐</div>
+        <h2 style="font-family:var(--font-display);color:var(--neon);margin:8px 0 4px;">ADMIN ACCESS</h2>
+        <p style="color:var(--text-muted);font-size:0.85rem;">Enter your password to continue</p>
+      </div>
+      <div class="input-wrapper" style="margin-bottom:16px;">
+        <span class="input-icon">🔑</span>
+        <input type="password" id="adminPass" class="url-input" placeholder="Admin password..." onkeydown="if(event.key==='Enter')checkLogin()"/>
+      </div>
+      <button class="btn-shorten" style="width:100%;" onclick="checkLogin()">
+        <span class="btn-text">🚀 LOGIN</span>
+        <span class="btn-glow"></span>
+      </button>
+      <div class="error-box" id="loginError" style="display:none;margin-top:12px;">
+        <span>❌ Incorrect password. Try again.</span>
+      </div>
+      <p style="text-align:center;margin-top:16px;font-size:0.75rem;color:var(--text-muted);">
+        Default password: <code style="color:var(--neon);">admin123</code><br/>
+        Change it in <code style="color:var(--neon-blue);">config.js</code>
+      </p>
+      <p style="text-align:center;margin-top:8px;"><a href="index.html" style="color:var(--text-muted);font-size:0.8rem;">← Back to Home</a></p>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="adminPanel" style="display:none;">
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">NEON<span class="logo-accent">LINK</span></span>
+        <span style="color:var(--neon-blue);font-size:0.7rem;margin-left:8px;font-family:var(--font-display);">[ADMIN]</span>
+      </div>
+      <nav class="nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <button class="nav-link" onclick="logout()" style="background:none;border:none;cursor:pointer;color:var(--neon-red);">Logout</button>
+      </nav>
+    </header>
+
+    <main class="main" style="padding-top:80px;">
+      <!-- Stats Row -->
+      <div class="stats-section" style="margin-bottom:32px;">
+        <div class="stat-card glass-card">
+          <div class="stat-num" id="adminTotal">0</div>
+          <div class="stat-label">Total Links</div>
+        </div>
+        <div class="stat-card glass-card">
+          <div class="stat-num" id="adminClicks">0</div>
+          <div class="stat-label">Total Clicks</div>
+        </div>
+        <div class="stat-card glass-card">
+          <div class="stat-num" id="githubStatus">—</div>
+          <div class="stat-label">GitHub Sync</div>
+        </div>
+      </div>
+
+      <!-- Add Link -->
+      <div class="glass-card admin-section">
+        <h3 class="section-title" style="font-size:1.1rem;margin-bottom:16px;">➕ ADD NEW LINK</h3>
+        <div class="admin-form-row">
+          <div class="input-wrapper" style="flex:1;">
+            <span class="input-icon">🆔</span>
+            <input type="text" id="newId" class="url-input" placeholder="Short ID (e.g. mylink)"/>
+          </div>
+          <div class="input-wrapper" style="flex:2;">
+            <span class="input-icon">🔗</span>
+            <input type="url" id="newUrl" class="url-input" placeholder="Destination URL"/>
+          </div>
+          <button class="btn-shorten" onclick="addLink()" style="white-space:nowrap;">
+            <span class="btn-text">ADD</span>
+            <span class="btn-glow"></span>
+          </button>
+        </div>
+        <div class="error-box" id="addError" style="display:none;margin-top:8px;"></div>
+        <div class="result-box" id="addSuccess" style="display:none;margin-top:8px;padding:10px 16px;"></div>
+      </div>
+
+      <!-- GitHub Config -->
+      <div class="glass-card admin-section">
+        <h3 class="section-title" style="font-size:1.1rem;margin-bottom:16px;">⚙️ GITHUB CONFIGURATION</h3>
+        <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:16px;">Configure your GitHub repo details to enable saving links permanently. Edit <code style="color:var(--neon)">config.js</code> or update below (session only).</p>
+        <div class="admin-form-row" style="flex-wrap:wrap;gap:12px;">
+          <div class="input-wrapper" style="flex:1;min-width:200px;">
+            <span class="input-icon">👤</span>
+            <input type="text" id="cfgOwner" class="url-input" placeholder="GitHub Username"/>
+          </div>
+          <div class="input-wrapper" style="flex:1;min-width:200px;">
+            <span class="input-icon">📁</span>
+            <input type="text" id="cfgRepo" class="url-input" placeholder="Repo Name"/>
+          </div>
+          <div class="input-wrapper" style="flex:2;min-width:200px;">
+            <span class="input-icon">🔑</span>
+            <input type="password" id="cfgToken" class="url-input" placeholder="GitHub Personal Access Token (PAT)"/>
+          </div>
+          <button class="btn-sm" onclick="saveGithubConfig()" style="padding:12px 20px;">SAVE</button>
+        </div>
+        <p style="color:var(--text-muted);font-size:0.75rem;margin-top:8px;">
+          ℹ️ Get a PAT at: <a href="https://github.com/settings/tokens" target="_blank" style="color:var(--neon)">github.com/settings/tokens</a> — needs <code>repo</code> scope. Your token stays in the browser only.
+        </p>
+      </div>
+
+      <!-- Links Table -->
+      <div class="glass-card admin-section">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+          <h3 class="section-title" style="font-size:1.1rem;margin:0;">📋 ALL LINKS</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn-sm" onclick="loadAdminLinks()">🔄 Refresh</button>
+            <button class="btn-sm btn-github" onclick="pushToGithub()">
+              <span id="pushBtnText">⬆️ Push to GitHub</span>
+            </button>
+            <button class="btn-sm btn-danger" onclick="clearAll()" style="background:rgba(255,50,50,0.15);border-color:var(--neon-red);color:var(--neon-red);">🗑️ Clear All</button>
+          </div>
+        </div>
+        <div id="pushStatus" style="display:none;margin-bottom:12px;"></div>
+
+        <div class="table-wrapper">
+          <table class="links-table" id="linksTable">
+            <thead>
+              <tr>
+                <th>SHORT ID</th>
+                <th>DESTINATION URL</th>
+                <th>CLICKS</th>
+                <th>SHORT LINK</th>
+                <th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="linksBody">
+              <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px;">Loading links...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box glass-card">
+      <h3 style="font-family:var(--font-display);color:var(--neon);margin-bottom:16px;">✏️ EDIT LINK</h3>
+      <div class="input-wrapper" style="margin-bottom:12px;">
+        <span class="input-icon">🆔</span>
+        <input type="text" id="editId" class="url-input" readonly style="opacity:0.6;"/>
+      </div>
+      <div class="input-wrapper" style="margin-bottom:16px;">
+        <span class="input-icon">🔗</span>
+        <input type="url" id="editUrl" class="url-input" placeholder="New destination URL"/>
+      </div>
+      <div style="display:flex;gap:12px;">
+        <button class="btn-shorten" onclick="saveEdit()" style="flex:1;">
+          <span class="btn-text">SAVE</span>
+          <span class="btn-glow"></span>
+        </button>
+        <button class="btn-sm" onclick="closeModal()" style="flex:1;">CANCEL</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+  <script>
+    function checkLogin() {
+      const pass = document.getElementById('adminPass').value;
+      if (pass === ADMIN_PASSWORD) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        document.getElementById('loginError').style.display = 'none';
+        loadAdminLinks();
+        loadAdminStats();
+        prefillConfig();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('adminPass').value = '';
+      }
+    }
+
+    function logout() {
+      document.getElementById('adminPanel').style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'flex';
+    }
+
+    function prefillConfig() {
+      document.getElementById('cfgOwner').value = GITHUB_OWNER || '';
+      document.getElementById('cfgRepo').value = GITHUB_REPO || '';
+      document.getElementById('cfgToken').value = '';
+    }
+
+    function saveGithubConfig() {
+      GITHUB_OWNER = document.getElementById('cfgOwner').value.trim();
+      GITHUB_REPO  = document.getElementById('cfgRepo').value.trim();
+      GITHUB_TOKEN = document.getElementById('cfgToken').value.trim();
+      showPushStatus('✅ Config saved for this session. Edit config.js to make it permanent.', 'success');
+    }
+
+    async function addLink() {
+      const id = document.getElementById('newId').value.trim() || generateId();
+      const url = document.getElementById('newUrl').value.trim();
+      const errBox = document.getElementById('addError');
+      const okBox  = document.getElementById('addSuccess');
+      errBox.style.display = 'none';
+      okBox.style.display = 'none';
+
+      if (!url) { errBox.textContent = '❌ Please enter a destination URL.'; errBox.style.display='block'; return; }
+      if (!isValidURL(url)) { errBox.textContent = '❌ Invalid URL format.'; errBox.style.display='block'; return; }
+      if (!/^[a-zA-Z0-9_-]+$/.test(id)) { errBox.textContent = '❌ ID can only contain letters, numbers, - and _.'; errBox.style.display='block'; return; }
+
+      const links = getLocalLinks();
+      if (links[id]) { errBox.textContent = `❌ ID "${id}" already exists. Choose another.`; errBox.style.display='block'; return; }
+
+      links[id] = { url: url, clicks: 0, created: new Date().toISOString() };
+      saveLocalLinks(links);
+
+      okBox.innerHTML = `✅ Link added! <a href="${getBaseURL()}redirect.html?id=${id}" target="_blank" style="color:var(--neon)">${getBaseURL()}redirect.html?id=${id}</a>`;
+      okBox.style.display = 'block';
+      document.getElementById('newId').value = '';
+      document.getElementById('newUrl').value = '';
+      loadAdminLinks();
+      loadAdminStats();
+    }
+
+    async function loadAdminLinks() {
+      const links = getLocalLinks();
+      const tbody = document.getElementById('linksBody');
+      const keys = Object.keys(links);
+
+      if (keys.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px;">No links yet. Add your first one above!</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = keys.map(id => {
+        const entry = typeof links[id] === 'object' ? links[id] : { url: links[id], clicks: 0 };
+        const shortLink = `${getBaseURL()}redirect.html?id=${id}`;
+        const displayUrl = entry.url.length > 45 ? entry.url.substring(0,45)+'…' : entry.url;
+        return `
+          <tr>
+            <td><code style="color:var(--neon)">${id}</code></td>
+            <td title="${entry.url}" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${displayUrl}</td>
+            <td style="text-align:center;">${entry.clicks || 0}</td>
+            <td>
+              <a href="${shortLink}" target="_blank" style="color:var(--neon-blue);font-size:0.8rem;">🔗 Open</a>
+              <button onclick="copyText('${shortLink}')" class="btn-sm" style="margin-left:4px;padding:4px 8px;font-size:0.7rem;">📋</button>
+            </td>
+            <td>
+              <button onclick="openEdit('${id}','${entry.url.replace(/'/g,"\\\'")}')" class="btn-sm" style="padding:4px 10px;">✏️</button>
+              <button onclick="deleteLink('${id}')" class="btn-sm" style="padding:4px 10px;background:rgba(255,50,50,0.15);border-color:var(--neon-red);color:var(--neon-red);margin-left:4px;">🗑️</button>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    function loadAdminStats() {
+      const links = getLocalLinks();
+      const keys = Object.keys(links);
+      let totalClicks = 0;
+      keys.forEach(k => { const e = links[k]; totalClicks += (typeof e==='object' ? e.clicks||0 : 0); });
+      document.getElementById('adminTotal').textContent = keys.length;
+      document.getElementById('adminClicks').textContent = totalClicks;
+    }
+
+    function openEdit(id, url) {
+      document.getElementById('editId').value = id;
+      document.getElementById('editUrl').value = url;
+      document.getElementById('editModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
+
+    function saveEdit() {
+      const id  = document.getElementById('editId').value;
+      const url = document.getElementById('editUrl').value.trim();
+      if (!url || !isValidURL(url)) { alert('Invalid URL'); return; }
+      const links = getLocalLinks();
+      const existing = typeof links[id] === 'object' ? links[id] : { url: links[id], clicks: 0 };
+      links[id] = { ...existing, url };
+      saveLocalLinks(links);
+      closeModal();
+      loadAdminLinks();
+    }
+
+    function deleteLink(id) {
+      if (!confirm(`Delete link "/${id}"?`)) return;
+      const links = getLocalLinks();
+      delete links[id];
+      saveLocalLinks(links);
+      loadAdminLinks();
+      loadAdminStats();
+    }
+
+    function clearAll() {
+      if (!confirm('⚠️ Delete ALL links? This cannot be undone!')) return;
+      saveLocalLinks({});
+      loadAdminLinks();
+      loadAdminStats();
+    }
+
+    async function pushToGithub() {
+      const btn = document.getElementById('pushBtnText');
+      if (!GITHUB_OWNER || !GITHUB_REPO || !GITHUB_TOKEN) {
+        showPushStatus('❌ GitHub not configured. Fill in the GitHub Configuration section above.', 'error');
+        return;
+      }
+      btn.textContent = '⏳ Pushing...';
+      const links = getLocalLinks();
+      const content = JSON.stringify(links, null, 2);
+      const b64 = btoa(unescape(encodeURIComponent(content)));
+
+      try {
+        // Get current SHA
+        const getRes = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/links.json`, {
+          headers: { Authorization: `token ${GITHUB_TOKEN}`, Accept: 'application/vnd.github.v3+json' }
+        });
+        let sha = null;
+        if (getRes.ok) { const data = await getRes.json(); sha = data.sha; }
+
+        const body = { message: 'Update links.json via NeonLink Admin', content: b64 };
+        if (sha) body.sha = sha;
+
+        const putRes = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/links.json`, {
+          method: 'PUT',
+          headers: { Authorization: `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json', Accept: 'application/vnd.github.v3+json' },
+          body: JSON.stringify(body)
+        });
+
+        if (putRes.ok) {
+          document.getElementById('githubStatus').textContent = '✅';
+          showPushStatus('✅ Successfully pushed links.json to GitHub! Changes live in ~1 minute.', 'success');
+        } else {
+          const err = await putRes.json();
+          showPushStatus(`❌ GitHub error: ${err.message}`, 'error');
+        }
+      } catch(e) {
+        showPushStatus(`❌ Network error: ${e.message}`, 'error');
+      }
+      btn.textContent = '⬆️ Push to GitHub';
+    }
+
+    function showPushStatus(msg, type) {
+      const el = document.getElementById('pushStatus');
+      el.style.display = 'block';
+      el.className = type === 'success' ? 'result-box' : 'error-box';
+      el.textContent = msg;
+      setTimeout(() => el.style.display = 'none', 6000);
+    }
+
+    // close modal on backdrop click
+    document.getElementById('editModal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+  </script>
+</body>
+</html>
