@@ -1,914 +1,451 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>LinkPro — Smart URL Shortener</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="style.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShortLink Pro - URL Shortener</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #a0a0a0;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #c0c0c0;
+            font-size: 0.9rem;
+        }
+
+        input[type="url"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="url"]:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+        }
+
+        input[type="url"]::placeholder {
+            color: #606060;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            color: #1a1a2e;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 217, 255, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-label {
+            color: #00ff88;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .short-link {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            color: #00ff88;
+            margin-bottom: 15px;
+        }
+
+        .copy-btn {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn:hover {
+            background: rgba(0, 255, 136, 0.3);
+        }
+
+        .error {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            color: #ff4757;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .stats {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stats h3 {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .link-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .link-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+        }
+
+        .link-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .link-item .short {
+            color: #00d9ff;
+            font-weight: bold;
+        }
+
+        .link-item .long {
+            color: #a0a0a0;
+            word-break: break-all;
+            margin-top: 5px;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+                width: 95%;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            input[type="url"],
+            button {
+                padding: 12px;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="bg-dots"></div>
-<div class="bg-glow"></div>
-<div id="toast"></div>
+    <div class="container">
+        <h1>🔗 ShortLink Pro</h1>
+        <p class="subtitle">Create short links instantly - stored locally in your browser</p>
 
-<!-- ════════════════════════════════════
-     AUTH SCREEN
-════════════════════════════════════ -->
-<div id="authScreen" class="auth-wrap">
-  <div class="auth-card">
-    <div class="auth-logo">
-      <div class="mark">🔗</div>
-      <div class="name">Link<span>Pro</span></div>
-      <div style="font-size:0.82rem;color:var(--text2);margin-top:4px">Earn money with every click</div>
-    </div>
-
-    <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchTab('login')">Login</button>
-      <button class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
-    </div>
-
-    <!-- Login Form -->
-    <div id="loginForm">
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input type="email" id="loginEmail" class="form-input" placeholder="your@email.com"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input type="password" id="loginPass" class="form-input" placeholder="Your password"
-          onkeydown="if(event.key==='Enter')doLogin()"/>
-      </div>
-      <div id="loginErr" class="alert alert-error" style="display:none"></div>
-      <button class="btn btn-gold btn-full" onclick="doLogin()">
-        <span id="loginBtnTxt">Login</span>
-      </button>
-      <div class="auth-footer">Don't have an account? <a href="#" onclick="switchTab('signup');return false">Sign Up Free</a></div>
-    </div>
-
-    <!-- Signup Form -->
-    <div id="signupForm" style="display:none">
-      <div class="form-group">
-        <label class="form-label">Full Name</label>
-        <input type="text" id="signName" class="form-input" placeholder="Your full name"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input type="email" id="signEmail" class="form-input" placeholder="your@email.com"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input type="password" id="signPass" class="form-input" placeholder="Min 6 characters"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Referral Code (optional)</label>
-        <input type="text" id="signRef" class="form-input" placeholder="Friend's referral code" id="signRef"/>
-      </div>
-      <div id="signErr" class="alert alert-error" style="display:none"></div>
-      <button class="btn btn-gold btn-full" onclick="doSignup()">
-        <span id="signBtnTxt">Create Free Account</span>
-      </button>
-      <div class="auth-footer">Already have account? <a href="#" onclick="switchTab('login');return false">Login</a></div>
-    </div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════
-     MAIN APP
-════════════════════════════════════ -->
-<div id="appScreen" class="app" style="display:none">
-
-  <!-- Sidebar overlay -->
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-mark">🔗</div>
-      <div><div class="logo-name">Link<span>Pro</span></div></div>
-    </div>
-    <nav class="sidebar-nav">
-      <button class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
-        <span class="ni">📊</span><span class="nl">Dashboard</span>
-      </button>
-      <button class="nav-item" onclick="showPage('links')" id="nav-links">
-        <span class="ni">🔗</span><span class="nl">My Links</span>
-      </button>
-      <button class="nav-item" onclick="showPage('earnings')" id="nav-earnings">
-        <span class="ni">💰</span><span class="nl">Earnings</span>
-      </button>
-      <button class="nav-item" onclick="showPage('referral')" id="nav-referral">
-        <span class="ni">👥</span><span class="nl">Referral</span>
-      </button>
-      <button class="nav-item" onclick="showPage('withdraw')" id="nav-withdraw">
-        <span class="ni">🏦</span><span class="nl">Withdraw</span>
-      </button>
-      <button class="nav-item" onclick="showPage('profile')" id="nav-profile">
-        <span class="ni">👤</span><span class="nl">Profile</span>
-      </button>
-    </nav>
-    <div class="sidebar-bottom">
-      <div class="user-chip" id="sidebarUser">
-        <div class="avatar" id="sidebarAvatar">?</div>
-        <div>
-          <div class="uname" id="sidebarName">Loading...</div>
-          <div class="uemail" id="sidebarEmail"></div>
+        <div class="input-group">
+            <label for="longUrl">Enter your long URL</label>
+            <input 
+                type="url" 
+                id="longUrl" 
+                placeholder="https://example.com/very/long/url/here"
+                required
+            >
         </div>
-      </div>
-      <button class="nav-item" style="margin-top:8px;color:var(--red)" onclick="doLogout()">
-        <span class="ni">🚪</span><span class="nl">Logout</span>
-      </button>
-    </div>
-  </aside>
 
-  <!-- Content -->
-  <div class="content">
-    <header class="topbar">
-      <div style="display:flex;align-items:center;gap:12px">
-        <button class="hamburger" onclick="toggleSidebar()">☰</button>
-        <span class="topbar-title" id="pageTitle">Dashboard</span>
-      </div>
-      <div class="topbar-actions">
-        <span style="font-size:0.8rem;color:var(--text2)">Balance:</span>
-        <span style="font-weight:700;color:var(--gold)" id="topBalance">₹0.00</span>
-      </div>
-    </header>
+        <button onclick="generateShortLink()">Generate Short Link</button>
 
-    <!-- ── DASHBOARD ── -->
-    <div class="page" id="page-dashboard">
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div class="stat-icon">🔗</div>
-          <div class="stat-val" id="dash-links">0</div>
-          <div class="stat-lbl">Total Links</div>
+        <div class="error" id="error"></div>
+
+        <div class="result" id="result">
+            <p class="result-label">✨ Your short link is ready:</p>
+            <div class="short-link" id="shortLink"></div>
+            <button class="copy-btn" onclick="copyToClipboard()">📋 Copy Link</button>
         </div>
-        <div class="stat-box">
-          <div class="stat-icon">👆</div>
-          <div class="stat-val" id="dash-clicks">0</div>
-          <div class="stat-lbl">Total Clicks</div>
+
+        <div class="stats" id="stats">
+            <h3>📊 Your Links</h3>
+            <div class="link-list" id="linkList"></div>
         </div>
-        <div class="stat-box">
-          <div class="stat-icon">💰</div>
-          <div class="stat-val" id="dash-earned">₹0</div>
-          <div class="stat-lbl">Total Earned</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-icon">👥</div>
-          <div class="stat-val" id="dash-refs">0</div>
-          <div class="stat-lbl">Referrals</div>
-        </div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px" class="dash-grid2">
-        <!-- Balance card -->
-        <div class="card card-gold">
-          <div class="card-title">💳 Current Balance</div>
-          <div style="font-family:var(--font-h);font-size:2.4rem;font-weight:800;color:var(--gold)" id="dash-balance">₹0.00</div>
-          <div style="font-size:0.78rem;color:var(--text2);margin:6px 0 16px">Available for withdrawal</div>
-          <button class="btn btn-gold btn-sm" onclick="showPage('withdraw')">Withdraw Now →</button>
-        </div>
-        <!-- Quick shorten -->
-        <div class="card">
-          <div class="card-title">⚡ Quick Shorten</div>
-          <div class="form-group" style="margin-bottom:10px">
-            <input type="url" id="quickUrl" class="form-input" placeholder="https://your-long-url.com"/>
-          </div>
-          <button class="btn btn-gold btn-full" onclick="quickShorten()">Create Short Link</button>
-        </div>
-      </div>
-
-      <!-- Recent links -->
-      <div class="card">
-        <div class="card-title">🕐 Recent Links
-          <button class="btn btn-outline btn-sm" style="margin-left:auto" onclick="showPage('links')">View All</button>
-        </div>
-        <div id="recentLinks"><div class="page-loader"><div class="spin"></div></div></div>
-      </div>
     </div>
 
-    <!-- ── LINKS PAGE ── -->
-    <div class="page hidden" id="page-links">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
-        <h2 style="font-family:var(--font-h);font-size:1.1rem">My Links</h2>
-        <button class="btn btn-gold" onclick="openCreateLink()">+ Create Link</button>
-      </div>
-      <div id="linksContainer"><div class="page-loader"><div class="spin"></div></div></div>
-    </div>
+    <script>
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLinks();
+        });
 
-    <!-- ── EARNINGS PAGE ── -->
-    <div class="page hidden" id="page-earnings">
-      <h2 style="font-family:var(--font-h);font-size:1.1rem;margin-bottom:20px">Earnings Details</h2>
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div class="stat-icon">💵</div>
-          <div class="stat-val" id="earn-total">₹0</div>
-          <div class="stat-lbl">Total Earned</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-icon">🏦</div>
-          <div class="stat-val" id="earn-balance">₹0</div>
-          <div class="stat-lbl">Available Balance</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-icon">📤</div>
-          <div class="stat-val" id="earn-withdrawn">₹0</div>
-          <div class="stat-lbl">Withdrawn</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-icon">⏳</div>
-          <div class="stat-val" id="earn-pending">₹0</div>
-          <div class="stat-lbl">Pending</div>
-        </div>
-      </div>
+        // Generate random ID for short link
+        function generateRandomId(length = 6) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
 
-      <div class="card" style="margin-bottom:16px">
-        <div class="card-title">📈 Earning Rates</div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
-          <div style="background:var(--bg3);padding:14px;border-radius:var(--r-sm)">
-            <div style="font-size:0.78rem;color:var(--text2);margin-bottom:4px">Per Click Earning</div>
-            <div style="font-family:var(--font-h);font-size:1.3rem;color:var(--gold)" id="rate-click">₹0.001</div>
-          </div>
-          <div style="background:var(--bg3);padding:14px;border-radius:var(--r-sm)">
-            <div style="font-size:0.78rem;color:var(--text2);margin-bottom:4px">Referral Signup Bonus</div>
-            <div style="font-family:var(--font-h);font-size:1.3rem;color:var(--gold)" id="rate-ref">₹5.00</div>
-          </div>
-          <div style="background:var(--bg3);padding:14px;border-radius:var(--r-sm)">
-            <div style="font-size:0.78rem;color:var(--text2);margin-bottom:4px">Referral Click %</div>
-            <div style="font-family:var(--font-h);font-size:1.3rem;color:var(--gold)" id="rate-refclick">10%</div>
-          </div>
-        </div>
-      </div>
+        // Get base URL for short links
+        function getBaseUrl() {
+            const protocol = window.location.protocol;
+            const host = window.location.host;
+            const path = window.location.pathname;
+            const basePath = path.substring(0, path.lastIndexOf('/') + 1);
+            return `${protocol}//${host}${basePath}`;
+        }
 
-      <div class="card">
-        <div class="card-title">📊 Per Link Earnings</div>
-        <div id="earningLinks"></div>
-      </div>
-    </div>
+        // Generate short link
+        function generateShortLink() {
+            const longUrlInput = document.getElementById('longUrl');
+            const longUrl = longUrlInput.value.trim();
+            const errorDiv = document.getElementById('error');
+            const resultDiv = document.getElementById('result');
 
-    <!-- ── REFERRAL PAGE ── -->
-    <div class="page hidden" id="page-referral">
-      <h2 style="font-family:var(--font-h);font-size:1.1rem;margin-bottom:20px">Referral Program</h2>
+            // Validate URL
+            if (!longUrl) {
+                showError('Please enter a URL');
+                return;
+            }
 
-      <div class="card card-gold" style="margin-bottom:16px">
-        <div class="card-title">🎁 Your Referral Link</div>
-        <div class="ref-box">
-          <span class="ref-link" id="refLinkText">Loading...</span>
-          <button class="btn btn-gold btn-sm" onclick="copyRef()">Copy</button>
-        </div>
-        <div style="font-size:0.8rem;color:var(--text2);margin-top:10px">
-          Share this link. Earn <strong style="color:var(--gold)">₹5</strong> when someone signs up +
-          <strong style="color:var(--gold)">10%</strong> of their click earnings forever!
-        </div>
-      </div>
+            // Simple URL validation
+            try {
+                new URL(longUrl);
+            } catch (e) {
+                showError('Please enter a valid URL (include http:// or https://)');
+                return;
+            }
 
-      <div class="stats-grid" style="margin-bottom:16px">
-        <div class="stat-box">
-          <div class="stat-icon">👥</div>
-          <div class="stat-val" id="ref-count">0</div>
-          <div class="stat-lbl">Total Referrals</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-icon">💰</div>
-          <div class="stat-val" id="ref-earn">₹0</div>
-          <div class="stat-lbl">Referral Earnings</div>
-        </div>
-      </div>
+            // Generate unique short ID
+            let shortId = generateRandomId();
+            let links = getLinks();
 
-      <div class="card">
-        <div class="card-title">💡 How It Works</div>
-        <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
-          <div style="display:flex;gap:14px;align-items:flex-start">
-            <div style="width:32px;height:32px;background:rgba(245,200,66,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--gold);flex-shrink:0">1</div>
-            <div><div style="font-weight:600;margin-bottom:2px">Share Your Link</div><div style="font-size:0.85rem;color:var(--text2)">Share your unique referral link with friends, family, or on social media.</div></div>
-          </div>
-          <div style="display:flex;gap:14px;align-items:flex-start">
-            <div style="width:32px;height:32px;background:rgba(245,200,66,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--gold);flex-shrink:0">2</div>
-            <div><div style="font-weight:600;margin-bottom:2px">They Sign Up</div><div style="font-size:0.85rem;color:var(--text2)">When they register using your referral code, you earn ₹5 instantly.</div></div>
-          </div>
-          <div style="display:flex;gap:14px;align-items:flex-start">
-            <div style="width:32px;height:32px;background:rgba(245,200,66,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--gold);flex-shrink:0">3</div>
-            <div><div style="font-weight:600;margin-bottom:2px">Passive Income Forever</div><div style="font-size:0.85rem;color:var(--text2)">Earn 10% of all click earnings your referrals generate — forever!</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
+            // Ensure uniqueness
+            while (links[shortId]) {
+                shortId = generateRandomId();
+            }
 
-    <!-- ── WITHDRAW PAGE ── -->
-    <div class="page hidden" id="page-withdraw">
-      <h2 style="font-family:var(--font-h);font-size:1.1rem;margin-bottom:20px">Withdrawal</h2>
+            // Store the link
+            links[shortId] = {
+                longUrl: longUrl,
+                createdAt: new Date().toISOString(),
+                clicks: 0
+            };
 
-      <div class="card card-gold" style="margin-bottom:16px">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
-          <div>
-            <div style="font-size:0.78rem;color:var(--text2);margin-bottom:4px">Available Balance</div>
-            <div style="font-family:var(--font-h);font-size:2rem;font-weight:800;color:var(--gold)" id="wd-balance">₹0.00</div>
-            <div style="font-size:0.75rem;color:var(--text2)">Min withdrawal: ₹50</div>
-          </div>
-          <button class="btn btn-gold" onclick="openWithdrawModal()">Request Withdrawal</button>
-        </div>
-      </div>
+            saveLinks(links);
 
-      <div class="card">
-        <div class="card-title">📋 Withdrawal History</div>
-        <div id="wdHistory"><div class="page-loader"><div class="spin"></div></div></div>
-      </div>
-    </div>
+            // Create short link URL
+            const baseUrl = getBaseUrl();
+            const shortLink = `${baseUrl}redirect.html?id=${shortId}`;
 
-    <!-- ── PROFILE PAGE ── -->
-    <div class="page hidden" id="page-profile">
-      <h2 style="font-family:var(--font-h);font-size:1.1rem;margin-bottom:20px">Profile Settings</h2>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" class="profile-grid">
-        <div class="card">
-          <div class="card-title">👤 Personal Info</div>
-          <div class="form-group">
-            <label class="form-label">Full Name</label>
-            <input type="text" id="profName" class="form-input"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Email</label>
-            <input type="email" id="profEmail" class="form-input" readonly/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Joined</label>
-            <input type="text" id="profJoined" class="form-input" readonly/>
-          </div>
-          <button class="btn btn-gold" onclick="saveProfile()">Save Changes</button>
-        </div>
-        <div class="card">
-          <div class="card-title">🏦 Payment Details</div>
-          <div class="form-group">
-            <label class="form-label">UPI ID</label>
-            <input type="text" id="profUpi" class="form-input" placeholder="yourname@upi"/>
-            <div class="form-hint">Used for withdrawals via UPI/PhonePe/GPay</div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Bank / PayPal (optional)</label>
-            <textarea id="profBank" class="form-input" rows="3" placeholder="Bank: AccountNo, IFSC&#10;or PayPal email" style="resize:vertical"></textarea>
-          </div>
-          <button class="btn btn-gold" onclick="saveProfile()">Save Payment Info</button>
-        </div>
-      </div>
-      <div class="card" style="margin-top:16px">
-        <div class="card-title">🔒 Change Password</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Current Password</label>
-            <input type="password" id="oldPass" class="form-input"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">New Password</label>
-            <input type="password" id="newPass" class="form-input"/>
-          </div>
-        </div>
-        <button class="btn btn-outline" onclick="changePassword()">Update Password</button>
-      </div>
-    </div>
+            // Display result
+            document.getElementById('shortLink').textContent = shortLink;
+            resultDiv.classList.add('show');
+            errorDiv.classList.remove('show');
 
-  </div><!-- /content -->
-</div><!-- /app -->
+            // Clear input
+            longUrlInput.value = '';
 
-<!-- ── CREATE LINK MODAL ── -->
-<div class="modal-bg" id="createLinkModal" style="display:none">
-  <div class="modal-box">
-    <div class="modal-title">
-      ➕ Create Short Link
-      <button class="modal-close" onclick="closeModal('createLinkModal')">✕</button>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Destination URL *</label>
-      <input type="url" id="clUrl" class="form-input" placeholder="https://your-long-url.com"/>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Title (optional)</label>
-      <input type="text" id="clTitle" class="form-input" placeholder="My Awesome Link"/>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Custom Short ID (optional)</label>
-      <input type="text" id="clId" class="form-input" placeholder="e.g. myproduct (leave blank for random)"/>
-      <div class="form-hint">Only letters, numbers, - and _</div>
-    </div>
-    <div id="clErr" class="alert alert-error" style="display:none"></div>
-    <div id="clSuccess" class="alert alert-success" style="display:none"></div>
-    <button class="btn btn-gold btn-full" onclick="doCreateLink()">
-      <span id="clBtnTxt">Create Link</span>
-    </button>
-  </div>
-</div>
+            // Reload links list
+            loadLinks();
+        }
 
-<!-- ── WITHDRAW MODAL ── -->
-<div class="modal-bg" id="withdrawModal" style="display:none">
-  <div class="modal-box">
-    <div class="modal-title">
-      💸 Request Withdrawal
-      <button class="modal-close" onclick="closeModal('withdrawModal')">✕</button>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Amount (₹)</label>
-      <input type="number" id="wdAmount" class="form-input" placeholder="50" min="50" step="1"/>
-      <div class="form-hint">Available: <span id="wdAvail">₹0</span> · Min: ₹50</div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">UPI ID</label>
-      <input type="text" id="wdUpi" class="form-input" placeholder="yourname@upi"/>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Method</label>
-      <select id="wdMethod" class="form-input">
-        <option value="UPI">UPI / PhonePe / GPay</option>
-        <option value="PayPal">PayPal</option>
-        <option value="Bank">Bank Transfer</option>
-      </select>
-    </div>
-    <div id="wdErr" class="alert alert-error" style="display:none"></div>
-    <button class="btn btn-gold btn-full" onclick="doWithdraw()">
-      <span id="wdBtnTxt">Submit Request</span>
-    </button>
-  </div>
-</div>
+        // Copy to clipboard
+        function copyToClipboard() {
+            const shortLink = document.getElementById('shortLink').textContent;
+            navigator.clipboard.writeText(shortLink).then(() => {
+                const copyBtn = document.querySelector('.copy-btn');
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = shortLink;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const copyBtn = document.querySelector('.copy-btn');
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 2000);
+            });
+        }
 
-<!-- ── EDIT LINK MODAL ── -->
-<div class="modal-bg" id="editLinkModal" style="display:none">
-  <div class="modal-box">
-    <div class="modal-title">
-      ✏️ Edit Link
-      <button class="modal-close" onclick="closeModal('editLinkModal')">✕</button>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Short ID</label>
-      <input type="text" id="elId" class="form-input" readonly/>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Destination URL</label>
-      <input type="url" id="elUrl" class="form-input"/>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Title</label>
-      <input type="text" id="elTitle" class="form-input"/>
-    </div>
-    <button class="btn btn-gold btn-full" onclick="doEditLink()">Save Changes</button>
-  </div>
-</div>
+        // Show error message
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            document.getElementById('result').classList.remove('show');
+        }
 
-<script src="db.js"></script>
-<script>
-// ─── HELPERS ─────────────────────────────────────────────
-let currentUser = null;
+        // Get links from localStorage
+        function getLinks() {
+            const links = localStorage.getItem('shortlink_pro_links');
+            return links ? JSON.parse(links) : {};
+        }
 
-function toast(msg, type='info') {
-  const t = document.getElementById('toast');
-  const el = document.createElement('div');
-  el.className = 'toast-item ' + type;
-  el.innerHTML = (type==='success'?'✅ ':type==='error'?'❌ ':'ℹ️ ') + msg;
-  t.appendChild(el);
-  setTimeout(() => el.remove(), 3500);
-}
+        // Save links to localStorage
+        function saveLinks(links) {
+            localStorage.setItem('shortlink_pro_links', JSON.stringify(links));
+        }
 
-function showBtn(id, loading, text) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (loading) el.innerHTML = '<span class="spin"></span>';
-  else el.textContent = text;
-}
+        // Load and display links
+        function loadLinks() {
+            const links = getLinks();
+            const linkList = document.getElementById('linkList');
+            
+            const linkIds = Object.keys(links);
+            
+            if (linkIds.length === 0) {
+                linkList.innerHTML = '<p style="color: #606060; text-align: center;">No links created yet</p>';
+                return;
+            }
 
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-function showErr(id, msg) { const el=document.getElementById(id); el.textContent=msg; el.style.display='flex'; }
-function hideErr(id) { document.getElementById(id).style.display='none'; }
+            let html = '';
+            const baseUrl = getBaseUrl();
 
-function fmt(n) { return '₹' + parseFloat(n||0).toFixed(2); }
-function fmtDate(iso) { return new Date(iso).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
-function getSiteBase() { const l=window.location; return l.protocol+'//'+l.host+l.pathname.replace(/\/[^/]*$/,'/'); }
+            // Sort by creation date (newest first)
+            linkIds.sort((a, b) => {
+                return new Date(links[b].createdAt) - new Date(links[a].createdAt);
+            });
 
-// ─── AUTH ─────────────────────────────────────────────────
-function switchTab(tab) {
-  document.getElementById('loginForm').style.display = tab==='login'?'block':'none';
-  document.getElementById('signupForm').style.display = tab==='signup'?'block':'none';
-  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='signup')));
-  // Pre-fill referral code from URL
-  if (tab === 'signup') {
-    const ref = new URLSearchParams(window.location.search).get('ref');
-    if (ref) document.getElementById('signRef').value = ref;
-  }
-}
+            // Show only last 10 links
+            linkIds.slice(0, 10).forEach(id => {
+                const link = links[id];
+                const shortLink = `${baseUrl}redirect.html?id=${id}`;
+                html += `
+                    <div class="link-item">
+                        <div class="short">${shortLink}</div>
+                        <div class="long">${link.longUrl}</div>
+                    </div>
+                `;
+            });
 
-async function doLogin() {
-  const email = document.getElementById('loginEmail').value.trim();
-  const pass  = document.getElementById('loginPass').value;
-  hideErr('loginErr');
-  if (!email || !pass) { showErr('loginErr','Please fill all fields'); return; }
-  showBtn('loginBtnTxt', true);
-  try {
-    const user = await loginUser(email, pass);
-    currentUser = user;
-    initApp();
-  } catch(e) { showErr('loginErr', e.message); }
-  showBtn('loginBtnTxt', false, 'Login');
-}
-
-async function doSignup() {
-  const name  = document.getElementById('signName').value.trim();
-  const email = document.getElementById('signEmail').value.trim();
-  const pass  = document.getElementById('signPass').value;
-  const ref   = document.getElementById('signRef').value.trim();
-  hideErr('signErr');
-  if (!name || !email || !pass) { showErr('signErr','Please fill all fields'); return; }
-  if (pass.length < 6) { showErr('signErr','Password must be at least 6 characters'); return; }
-  showBtn('signBtnTxt', true);
-  try {
-    const user = await createUser(name, email, pass, ref);
-    setCurrentUser(user, true);
-    currentUser = user;
-    initApp();
-    toast('Welcome to LinkPro! 🎉', 'success');
-  } catch(e) { showErr('signErr', e.message); }
-  showBtn('signBtnTxt', false, 'Create Free Account');
-}
-
-function doLogout() {
-  logout();
-  currentUser = null;
-  document.getElementById('appScreen').style.display = 'none';
-  document.getElementById('authScreen').style.display = 'flex';
-  toast('Logged out successfully');
-}
-
-// ─── APP INIT ─────────────────────────────────────────────
-function initApp() {
-  if (!currentUser) return;
-  document.getElementById('authScreen').style.display = 'none';
-  document.getElementById('appScreen').style.display = 'flex';
-
-  // Set sidebar user info
-  document.getElementById('sidebarAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
-  document.getElementById('sidebarName').textContent = currentUser.name;
-  document.getElementById('sidebarEmail').textContent = currentUser.email;
-  document.getElementById('topBalance').textContent = fmt(currentUser.balance);
-
-  // Load settings rates
-  const s = getSettings();
-  DB_CONFIG.perClickEarning = s.perClickEarning;
-  DB_CONFIG.referralBonus = s.referralBonus;
-  DB_CONFIG.referralClickPercent = s.referralClickPercent;
-
-  showPage('dashboard');
-}
-
-// ─── SIDEBAR ──────────────────────────────────────────────
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').classList.toggle('show');
-}
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('show');
-}
-
-// ─── PAGES ────────────────────────────────────────────────
-const pageTitles = {
-  dashboard:'Dashboard', links:'My Links', earnings:'Earnings',
-  referral:'Referral Program', withdraw:'Withdrawal', profile:'Profile'
-};
-
-function showPage(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-'+page).classList.remove('hidden');
-  const navEl = document.getElementById('nav-'+page);
-  if (navEl) navEl.classList.add('active');
-  document.getElementById('pageTitle').textContent = pageTitles[page] || page;
-  closeSidebar();
-  loadPage(page);
-}
-
-async function loadPage(page) {
-  // Refresh current user from storage
-  const users = localGet('users') || {};
-  if (currentUser && users[currentUser.id]) {
-    currentUser = users[currentUser.id];
-    setCurrentUser(currentUser, true);
-    document.getElementById('topBalance').textContent = fmt(currentUser.balance);
-  }
-
-  if (page === 'dashboard') loadDashboard();
-  else if (page === 'links') loadLinks();
-  else if (page === 'earnings') loadEarnings();
-  else if (page === 'referral') loadReferral();
-  else if (page === 'withdraw') loadWithdraw();
-  else if (page === 'profile') loadProfile();
-}
-
-// ─── DASHBOARD ────────────────────────────────────────────
-async function loadDashboard() {
-  document.getElementById('dash-links').textContent = currentUser.totalLinks || 0;
-  document.getElementById('dash-clicks').textContent = currentUser.totalClicks || 0;
-  document.getElementById('dash-earned').textContent = fmt(currentUser.totalEarned);
-  document.getElementById('dash-refs').textContent = currentUser.totalReferrals || 0;
-  document.getElementById('dash-balance').textContent = fmt(currentUser.balance);
-
-  // Recent links
-  const links = localGet('links') || {};
-  const myLinks = Object.values(links).filter(l => l.userId === currentUser.id)
-    .sort((a,b) => new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
-
-  const el = document.getElementById('recentLinks');
-  if (!myLinks.length) {
-    el.innerHTML = `<div class="empty"><div class="ei">🔗</div><div class="et">No links yet</div><div class="es">Create your first short link to start earning!</div></div>`;
-    return;
-  }
-  el.innerHTML = myLinks.map(l => renderLinkRow(l)).join('');
-}
-
-// ─── LINKS ────────────────────────────────────────────────
-async function loadLinks() {
-  const links = localGet('links') || {};
-  const myLinks = Object.values(links).filter(l => l.userId === currentUser.id)
-    .sort((a,b) => new Date(b.createdAt)-new Date(a.createdAt));
-  const el = document.getElementById('linksContainer');
-  if (!myLinks.length) {
-    el.innerHTML = `<div class="empty"><div class="ei">🔗</div><div class="et">No links yet</div><div class="es">Click "+ Create Link" to get started</div></div>`;
-    return;
-  }
-  el.innerHTML = '<div style="display:flex;flex-direction:column;gap:12px">' + myLinks.map(l => renderLinkCard(l)).join('') + '</div>';
-}
-
-function renderLinkRow(l) {
-  const short = getSiteBase() + 'go.html?id=' + l.id;
-  return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
-    <div style="flex:1;min-width:0">
-      <div class="link-short">${short}</div>
-      <div class="link-orig">${l.originalUrl}</div>
-    </div>
-    <div style="text-align:right;flex-shrink:0">
-      <div style="font-size:0.8rem;color:var(--gold);font-weight:700">${l.clicks||0} clicks</div>
-      <div style="font-size:0.75rem;color:var(--text2)">${fmt(l.earning)}</div>
-    </div>
-  </div>`;
-}
-
-function renderLinkCard(l) {
-  const short = getSiteBase() + 'go.html?id=' + l.id;
-  return `<div class="link-card">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
-      <div style="min-width:0;flex:1">
-        <div class="link-short">⚡ ${short}</div>
-        <div class="link-orig" style="margin-top:4px" title="${l.originalUrl}">${l.originalUrl}</div>
-        ${l.title ? `<div style="font-size:0.78rem;color:var(--text2);margin-top:2px">📝 ${l.title}</div>` : ''}
-      </div>
-      <div class="link-actions">
-        <button class="btn btn-outline btn-xs" onclick="copyText('${short}')">📋 Copy</button>
-        <button class="btn btn-outline btn-xs" onclick="openEditLink('${l.id}')">✏️</button>
-        <button class="btn btn-danger btn-xs" onclick="doDeleteLink('${l.id}')">🗑️</button>
-      </div>
-    </div>
-    <div class="link-meta">
-      <span class="link-stat">👆 <strong>${l.clicks||0}</strong> clicks</span>
-      <span class="link-stat">💰 <strong>${fmt(l.earning)}</strong> earned</span>
-      <span class="link-stat">📅 <strong>${fmtDate(l.createdAt)}</strong></span>
-    </div>
-  </div>`;
-}
-
-// ─── CREATE LINK ──────────────────────────────────────────
-function openCreateLink() { 
-  closeModal('createLinkModal');
-  document.getElementById('clUrl').value='';
-  document.getElementById('clTitle').value='';
-  document.getElementById('clId').value='';
-  document.getElementById('clSuccess').style.display='none';
-  hideErr('clErr');
-  openModal('createLinkModal'); 
-}
-
-async function doCreateLink() {
-  const url   = document.getElementById('clUrl').value.trim();
-  const title = document.getElementById('clTitle').value.trim();
-  const id    = document.getElementById('clId').value.trim().replace(/[^a-zA-Z0-9_-]/g,'');
-  hideErr('clErr');
-  document.getElementById('clSuccess').style.display = 'none';
-  showBtn('clBtnTxt', true);
-  try {
-    const link = await createLink(currentUser.id, url, id||null, title);
-    const short = getSiteBase() + 'go.html?id=' + link.id;
-    document.getElementById('clSuccess').innerHTML = `✅ Created! <a href="${short}" target="_blank" style="color:var(--gold)">${short}</a>`;
-    document.getElementById('clSuccess').style.display = 'flex';
-    toast('Link created successfully!', 'success');
-    loadLinks();
-    loadDashboard();
-    // Refresh user
-    const users = localGet('users') || {};
-    if (users[currentUser.id]) { currentUser = users[currentUser.id]; setCurrentUser(currentUser,true); }
-  } catch(e) { showErr('clErr', e.message); }
-  showBtn('clBtnTxt', false, 'Create Link');
-}
-
-async function quickShorten() {
-  const url = document.getElementById('quickUrl').value.trim();
-  if (!url) { toast('Please enter a URL', 'error'); return; }
-  try {
-    const link = await createLink(currentUser.id, url, null, null);
-    const short = getSiteBase() + 'go.html?id=' + link.id;
-    toast('Link created: ' + short, 'success');
-    document.getElementById('quickUrl').value = '';
-    loadDashboard();
-    const users = localGet('users') || {};
-    if (users[currentUser.id]) { currentUser = users[currentUser.id]; setCurrentUser(currentUser,true); }
-  } catch(e) { toast(e.message, 'error'); }
-}
-
-// ─── EDIT LINK ────────────────────────────────────────────
-function openEditLink(id) {
-  const links = localGet('links') || {};
-  const l = links[id];
-  if (!l) return;
-  document.getElementById('elId').value = id;
-  document.getElementById('elUrl').value = l.originalUrl;
-  document.getElementById('elTitle').value = l.title || '';
-  openModal('editLinkModal');
-}
-
-async function doEditLink() {
-  const id    = document.getElementById('elId').value;
-  const url   = document.getElementById('elUrl').value.trim();
-  const title = document.getElementById('elTitle').value.trim();
-  if (!url) { toast('URL cannot be empty', 'error'); return; }
-  const links = localGet('links') || {};
-  if (links[id]) { links[id].originalUrl = url; links[id].title = title; }
-  localSet('links', links);
-  try { await ghPut('links.json', links); } catch(_) {}
-  closeModal('editLinkModal');
-  toast('Link updated!', 'success');
-  loadLinks();
-}
-
-async function doDeleteLink(id) {
-  if (!confirm('Delete this link? This cannot be undone.')) return;
-  try {
-    await deleteLink(id, currentUser.id);
-    toast('Link deleted', 'success');
-    loadLinks();
-    loadDashboard();
-  } catch(e) { toast(e.message, 'error'); }
-}
-
-// ─── EARNINGS ────────────────────────────────────────────
-async function loadEarnings() {
-  const users = localGet('users') || {};
-  const u = users[currentUser.id] || currentUser;
-  const withdrawals = localGet('withdrawals') || [];
-  const myWd = withdrawals.filter(w => w.userId === currentUser.id);
-  const withdrawn = myWd.filter(w=>w.status==='approved').reduce((s,w)=>s+w.amount,0);
-  const pending   = myWd.filter(w=>w.status==='pending').reduce((s,w)=>s+w.amount,0);
-  const s = getSettings();
-
-  document.getElementById('earn-total').textContent    = fmt(u.totalEarned);
-  document.getElementById('earn-balance').textContent  = fmt(u.balance);
-  document.getElementById('earn-withdrawn').textContent= fmt(withdrawn);
-  document.getElementById('earn-pending').textContent  = fmt(pending);
-  document.getElementById('rate-click').textContent    = '₹' + s.perClickEarning;
-  document.getElementById('rate-ref').textContent      = '₹' + s.referralBonus;
-  document.getElementById('rate-refclick').textContent = s.referralClickPercent + '%';
-
-  const links = localGet('links') || {};
-  const myLinks = Object.values(links).filter(l => l.userId === currentUser.id)
-    .sort((a,b) => (b.earning||0)-(a.earning||0));
-  const maxEarn = Math.max(...myLinks.map(l=>l.earning||0), 0.001);
-  const el = document.getElementById('earningLinks');
-  if (!myLinks.length) { el.innerHTML = '<div class="empty"><div class="ei">💰</div><div class="et">No earnings yet</div><div class="es">Create links and share them to earn!</div></div>'; return; }
-  el.innerHTML = myLinks.map(l => `
-    <div class="earn-row">
-      <div style="min-width:0;flex:1">
-        <div style="font-size:0.82rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l.title||l.id}</div>
-        <div class="earn-bar-wrap" style="margin-top:6px"><div class="earn-bar" style="width:${Math.max(2,((l.earning||0)/maxEarn)*100)}%"></div></div>
-      </div>
-      <div style="text-align:right;flex-shrink:0;padding-left:16px">
-        <div style="font-weight:700;color:var(--gold)">${fmt(l.earning)}</div>
-        <div style="font-size:0.75rem;color:var(--text2)">${l.clicks||0} clicks</div>
-      </div>
-    </div>`).join('');
-}
-
-// ─── REFERRAL ────────────────────────────────────────────
-function loadReferral() {
-  const refUrl = getSiteBase() + 'index.html?ref=' + currentUser.referralCode;
-  document.getElementById('refLinkText').textContent = refUrl;
-  const users = localGet('users') || {};
-  const u = users[currentUser.id] || currentUser;
-  document.getElementById('ref-count').textContent = u.totalReferrals || 0;
-  // Referral earnings = totalEarned - click earnings (approx)
-  document.getElementById('ref-earn').textContent = fmt((u.totalEarned||0) - (u.totalClicks||0) * DB_CONFIG.perClickEarning);
-}
-
-function copyRef() {
-  const url = getSiteBase() + 'index.html?ref=' + currentUser.referralCode;
-  copyText(url);
-}
-
-// ─── WITHDRAW ────────────────────────────────────────────
-async function loadWithdraw() {
-  const users = localGet('users') || {};
-  const u = users[currentUser.id] || currentUser;
-  document.getElementById('wd-balance').textContent = fmt(u.balance);
-
-  const withdrawals = localGet('withdrawals') || [];
-  const myWd = withdrawals.filter(w => w.userId === currentUser.id);
-  const el = document.getElementById('wdHistory');
-  if (!myWd.length) { el.innerHTML = '<div class="empty"><div class="ei">📤</div><div class="et">No withdrawals yet</div></div>'; return; }
-  el.innerHTML = `<div class="table-wrap"><table>
-    <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>UPI</th><th>Status</th></tr></thead>
-    <tbody>${myWd.map(w=>`<tr>
-      <td>${fmtDate(w.requestedAt)}</td>
-      <td style="color:var(--gold);font-weight:700">${fmt(w.amount)}</td>
-      <td>${w.method}</td>
-      <td style="font-size:0.8rem">${w.upiId}</td>
-      <td><span class="badge ${w.status==='approved'?'badge-green':w.status==='rejected'?'badge-red':'badge-yellow'}">${w.status}</span></td>
-    </tr>`).join('')}</tbody>
-  </table></div>`;
-}
-
-function openWithdrawModal() {
-  const users = localGet('users') || {};
-  const u = users[currentUser.id] || currentUser;
-  document.getElementById('wdAvail').textContent = fmt(u.balance);
-  document.getElementById('wdUpi').value = u.upiId || '';
-  document.getElementById('wdAmount').value = '';
-  hideErr('wdErr');
-  openModal('withdrawModal');
-}
-
-async function doWithdraw() {
-  const amount = parseFloat(document.getElementById('wdAmount').value);
-  const upi    = document.getElementById('wdUpi').value.trim();
-  const method = document.getElementById('wdMethod').value;
-  hideErr('wdErr');
-  showBtn('wdBtnTxt', true);
-  try {
-    await requestWithdrawal(currentUser.id, amount, upi, method);
-    closeModal('withdrawModal');
-    toast('Withdrawal request submitted! Admin will process within 24-48 hours.', 'success');
-    const users = localGet('users') || {};
-    if (users[currentUser.id]) { currentUser = users[currentUser.id]; setCurrentUser(currentUser,true); document.getElementById('topBalance').textContent = fmt(currentUser.balance); }
-    loadWithdraw();
-  } catch(e) { showErr('wdErr', e.message); }
-  showBtn('wdBtnTxt', false, 'Submit Request');
-}
-
-// ─── PROFILE ─────────────────────────────────────────────
-function loadProfile() {
-  const users = localGet('users') || {};
-  const u = users[currentUser.id] || currentUser;
-  document.getElementById('profName').value   = u.name || '';
-  document.getElementById('profEmail').value  = u.email || '';
-  document.getElementById('profJoined').value = fmtDate(u.joinedAt || new Date());
-  document.getElementById('profUpi').value    = u.upiId || '';
-  document.getElementById('profBank').value   = u.bankDetails || '';
-}
-
-async function saveProfile() {
-  const name = document.getElementById('profName').value.trim();
-  const upi  = document.getElementById('profUpi').value.trim();
-  const bank = document.getElementById('profBank').value.trim();
-  if (!name) { toast('Name cannot be empty', 'error'); return; }
-  try {
-    const updated = await updateUser(currentUser.id, { name, upiId: upi, bankDetails: bank });
-    currentUser = updated;
-    setCurrentUser(updated, true);
-    document.getElementById('sidebarName').textContent = name;
-    document.getElementById('sidebarAvatar').textContent = name.charAt(0).toUpperCase();
-    toast('Profile saved!', 'success');
-  } catch(e) { toast(e.message, 'error'); }
-}
-
-async function changePassword() {
-  const old  = document.getElementById('oldPass').value;
-  const nw   = document.getElementById('newPass').value;
-  if (!old || !nw) { toast('Fill both password fields', 'error'); return; }
-  if (nw.length < 6) { toast('New password must be at least 6 characters', 'error'); return; }
-  const users = localGet('users') || {};
-  const u = users[currentUser.id];
-  if (!u || atob(u.password) !== old) { toast('Current password is incorrect', 'error'); return; }
-  await updateUser(currentUser.id, { password: btoa(nw) });
-  document.getElementById('oldPass').value = '';
-  document.getElementById('newPass').value = '';
-  toast('Password updated!', 'success');
-}
-
-// ─── COPY ─────────────────────────────────────────────────
-function copyText(t) {
-  navigator.clipboard.writeText(t).catch(()=>{const e=document.createElement('textarea');e.value=t;document.body.appendChild(e);e.select();document.execCommand('copy');document.body.removeChild(e);});
-  toast('Copied to clipboard!', 'success');
-}
-
-// ─── BOOT ─────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
-  const saved = getCurrentUser();
-  if (saved) { currentUser = saved; initApp(); }
-  else {
-    // Check for referral code in URL
-    const ref = new URLSearchParams(window.location.search).get('ref');
-    if (ref) { switchTab('signup'); document.getElementById('signRef').value = ref; }
-  }
-});
-</script>
+            linkList.innerHTML = html;
+        }
+    </script>
 </body>
 </html>

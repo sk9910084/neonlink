@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Please Wait - Redirecting...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .loader-container {
+            margin-bottom: 30px;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #00d9ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .message {
+            color: #a0a0a0;
+            margin-bottom: 10px;
+        }
+
+        .countdown {
+            font-size: 1.2rem;
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .destination {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            word-break: break-all;
+            font-size: 0.9rem;
+            color: #c0c0c0;
+        }
+
+        /* Ad Container */
+        .ad-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px 0;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ad-label {
+            color: #606060;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .ad-placeholder {
+            background: rgba(0, 217, 255, 0.1);
+            border: 2px dashed rgba(0, 217, 255, 0.3);
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            color: #606060;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        .ad-placeholder strong {
+            color: #00d9ff;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        /* Manual Ad Script Container */
+        .ad-script-container {
+            width: 100%;
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .manual-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #a0a0a0;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .manual-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+        }
+
+        .skip-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #a0a0a0;
+            padding: 12px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .skip-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+
+        .skip-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            color: #ff4757;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            .ad-container {
+                padding: 15px;
+            }
+
+            .ad-placeholder {
+                padding: 30px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="loader-container">
+            <div class="loader"></div>
+            <h1>Please Wait</h1>
+            <p class="message">Redirecting you to your destination...</p>
+            <p class="countdown" id="countdown">Redirecting in <span id="seconds">5</span> seconds</p>
+        </div>
+
+        <div class="destination" id="destination">
+            Destination: <span id="destUrl">Loading...</span>
+        </div>
+
+        <!-- AD CONTAINER - Place your ad scripts here -->
+        <div class="ad-container">
+            <p class="ad-label">Advertisement</p>
+            
+            <!-- ============================================ -->
+            <!-- ADSENSE / AD SCRIPT INTEGRATION AREA         -->
+            <!-- ============================================ -->
+            <!-- 
+                INSTRUCTIONS:
+                1. Replace the placeholder div below with your ad script
+                2. For Google AdSense, paste your ad code where indicated
+                3. Make sure to comply with ad network policies
+                
+                Example for Google AdSense:
+                
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+                     crossorigin="anonymous"></script>
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                     data-ad-slot="XXXXXXXXXX"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            -->
+            
+            <div class="ad-placeholder" id="adPlaceholder">
+                <strong>📢 Ad Space Available</strong>
+                Insert your Google AdSense or other ad network script here.<br>
+                Edit redirect.html and replace this div with your ad code.
+            </div>
+            
+            <!-- Paste your ad script below this line -->
+            <div class="ad-script-container" id="adScriptContainer">
+                <!-- Your ad script will be rendered here -->
+            </div>
+            <!-- ============================================ -->
+            
+        </div>
+
+        <button class="skip-btn" id="skipBtn" disabled>
+            Skip Wait (<span id="skipCountdown">5</span>s)
+        </button>
+
+        <div class="error-message" id="errorMessage">
+            Error: Could not find the destination URL. Please check your link.
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const REDIRECT_DELAY = 5000; // 5 seconds delay
+        
+        // Get URL parameters
+        function getUrlParameter(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
+        // Get links from localStorage
+        function getLinks() {
+            const links = localStorage.getItem('shortlink_pro_links');
+            return links ? JSON.parse(links) : {};
+        }
+
+        // Increment click count
+        function incrementClicks(shortId) {
+            const links = getLinks();
+            if (links[shortId]) {
+                links[shortId].clicks = (links[shortId].clicks || 0) + 1;
+                localStorage.setItem('shortlink_pro_links', JSON.stringify(links));
+            }
+        }
+
+        // Main redirect logic
+        function initRedirect() {
+            const shortId = getUrlParameter('id');
+            const countdownEl = document.getElementById('seconds');
+            const skipCountdownEl = document.getElementById('skipCountdown');
+            const skipBtn = document.getElementById('skipBtn');
+            const destUrlEl = document.getElementById('destUrl');
+            const errorMessage = document.getElementById('errorMessage');
+            const destinationDiv = document.getElementById('destination');
+
+            if (!shortId) {
+                errorMessage.classList.add('show');
+                destinationDiv.style.display = 'none';
+                document.querySelector('.loader-container').style.display = 'none';
+                skipBtn.style.display = 'none';
+                return;
+            }
+
+            const links = getLinks();
+            const linkData = links[shortId];
+
+            if (!linkData || !linkData.longUrl) {
+                errorMessage.classList.add('show');
+                destinationDiv.style.display = 'none';
+                document.querySelector('.loader-container').style.display = 'none';
+                skipBtn.style.display = 'none';
+                return;
+            }
+
+            const targetUrl = linkData.longUrl;
+            destUrlEl.textContent = targetUrl;
+
+            // Increment click count
+            incrementClicks(shortId);
+
+            // Countdown timer
+            let secondsLeft = Math.ceil(REDIRECT_DELAY / 1000);
+            countdownEl.textContent = secondsLeft;
+            skipCountdownEl.textContent = secondsLeft;
+
+            const countdownInterval = setInterval(() => {
+                secondsLeft--;
+                countdownEl.textContent = secondsLeft;
+                skipCountdownEl.textContent = secondsLeft;
+
+                if (secondsLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    skipBtn.disabled = false;
+                    skipBtn.textContent = 'Skip →';
+                    skipBtn.style.background = 'linear-gradient(90deg, #00d9ff, #00ff88)';
+                    skipBtn.style.color = '#1a1a2e';
+                    skipBtn.style.border = 'none';
+                    
+                    // Auto redirect
+                    performRedirect(targetUrl);
+                }
+            }, 1000);
+
+            // Skip button click handler
+            skipBtn.addEventListener('click', () => {
+                if (!skipBtn.disabled) {
+                    performRedirect(targetUrl);
+                }
+            });
+        }
+
+        // Perform the actual redirect
+        function performRedirect(url) {
+            // Prevent multiple redirects
+            if (window.redirecting) return;
+            window.redirecting = true;
+
+            // Update UI
+            document.querySelector('.loader-container').innerHTML = '<h1>Redirecting...</h1>';
+            document.getElementById('countdown').style.display = 'none';
+            document.getElementById('skipBtn').style.display = 'none';
+
+            // Small delay to show "Redirecting..." message
+            setTimeout(() => {
+                window.location.href = url;
+            }, 500);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initRedirect);
+    </script>
+</body>
+</html>
